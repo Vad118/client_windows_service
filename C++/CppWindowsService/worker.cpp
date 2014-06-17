@@ -21,7 +21,7 @@ extern "C"
 
 using namespace std;
 
-enum{STR_SIZE=256,PORT=7500,PORT_MONITORING=7501, ARBITERS_MAX=100};
+enum{STR_SIZE=256,PORT=7500,PORT_MONITORING=7300, ARBITERS_MAX=100};
 
 struct actor
 {
@@ -404,11 +404,6 @@ void readSocket(void *client)
         //Работу программы, а просто один раз читает состояние сокета
         Sleep(1);
         bool fl=false;
-
-        while(!quit)
-        {
-            fl=false;
-            Sleep(1);
             //Очищаем readfds
             FD_ZERO(&readfds);
             //Заносим дескриптор сокета в readfds
@@ -490,7 +485,6 @@ void readSocket(void *client)
                                 start_lua("createAndInitActors"); //Всегда начинаем с функции creatAndInitActors
                                 break;
                             case 10:
-                                quit=true;
                                 global_quit=true;
                                 fl=true;
                                 break;
@@ -502,13 +496,12 @@ void readSocket(void *client)
                else
                    fl=true;
             }
-        }
-        answer.command=10;
-        char *pBuff = new char[sizeof(dispatcher_answer)];
-        memcpy(pBuff,&answer,sizeof(dispatcher_answer));
-        send(my_client->my_sock,pBuff, sizeof(dispatcher_answer), 0);
+	 }
+	answer.command=10;
+    char *pBuff = new char[sizeof(dispatcher_answer)];
+    memcpy(pBuff,&answer,sizeof(dispatcher_answer));
+    send(my_client->my_sock,pBuff, sizeof(dispatcher_answer), 0);
 
-    }
     closesocket(my_client->my_sock);
     closesocket(my_client->monitoring_sock);
     delete my_client;
